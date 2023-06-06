@@ -1,0 +1,39 @@
+version: "3"
+
+services:
+  catalog:
+    build: ./catalog
+    environment:
+      APP_PRICING_ENDPOINT: http://pricing:8080/prices
+      APP_STOCKS_ENDPOINT: http://stocks:8080/stocks
+      SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/postgres?currentSchema=catalog
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: root
+    ports:
+      - "8080:8080"
+    depends_on:
+      - pricing
+      - stocks
+      - postgres
+  pricing:
+    build: ./pricing
+    environment:
+      SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/postgres?currentSchema=pricing
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: root
+    depends_on:
+      - postgres
+  stocks:
+    build: ./stocks
+    environment:
+      SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/postgres?currentSchema=stocks
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: root
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: root
+    volumes:
+      - ./config/postgres:/docker-entrypoint-initdb.d:ro

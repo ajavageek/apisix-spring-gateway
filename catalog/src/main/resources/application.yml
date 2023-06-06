@@ -1,0 +1,3 @@
+app:
+  pricing.endpoint: http://localhost:8081/prices
+  stocks.endpoint: http://localhost:8082/stocks

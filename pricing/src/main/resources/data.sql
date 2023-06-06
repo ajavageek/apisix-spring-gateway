@@ -1,0 +1,5 @@
+INSERT INTO PRICE(PRODUCT_ID, PRICE)
+VALUES
+    (1, 0.49),
+    (2, 1.49),
+    (3, 9.99);
