@@ -24,7 +24,15 @@ class CatalogApplication
 
 class PriceHandler(private val props: AppProperties, private val repository: ProductRepository) {
 
-    private val client = WebClient.builder().build()
+    private val client: WebClient
+
+    init {
+        val builder = WebClient.builder()
+        if (props.referer != null) {
+            builder.defaultHeader("Referer", props.referer)
+        }
+        client = builder.build()
+    }
 
     suspend fun products(req: ServerRequest): ServerResponse {
         val idsString = req.queryParam("id").orElse(null)

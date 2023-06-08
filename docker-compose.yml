@@ -6,6 +6,7 @@ services:
     environment:
       APP_PRICING_ENDPOINT: http://pricing:8080/prices
       APP_STOCKS_ENDPOINT: http://stocks:8080/stocks
+      APP_REFERER: http://catalog.me
       SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/postgres?currentSchema=catalog
       SPRING_R2DBC_USERNAME: postgres
       SPRING_R2DBC_PASSWORD: root
@@ -37,3 +38,17 @@ services:
       POSTGRES_PASSWORD: root
     volumes:
       - ./config/postgres:/docker-entrypoint-initdb.d:ro
+  prometheus:
+    image: prom/prometheus:v2.44.0
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  grafana:
+    image: grafana/grafana:9.5.2
+    volumes:
+      - "./config/grafana/provisioning:/etc/grafana/provisioning"
+      - "./config/grafana/dashboards:/var/lib/grafana/dashboards"
+      - "./config/grafana/grafana.ini:/etc/grafana/grafana.ini"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
