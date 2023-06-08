@@ -1,0 +1,20 @@
+spring.cloud.gateway.routes:
+  - id: products
+    uri: http://catalog:8080
+    predicates:
+      - Path=/v1/products*
+    filters:
+      - StripPrefix=1
+  - id: pricing
+    uri: http://pricing:8080
+    predicates:
+      - Path=/prices*
+      - Header=Referer, http://catalog.me
+  - id: stocks
+    uri: http://stocks:8080
+    predicates:
+      - Path=/stocks*
+      - Header=Referer, http://catalog.me
+management:
+  endpoint.gateway.enabled: true
+  endpoints.web.exposure.include: gateway,prometheus
