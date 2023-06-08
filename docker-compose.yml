@@ -1,17 +1,24 @@
 version: "3"
 
 services:
+  gateway:
+    image: apache/apisix:3.3.0-debian
+    volumes:
+      - ./config/apisix/config.yml:/usr/local/apisix/conf/config.yaml:ro
+      - ./config/apisix/apisix.yml:/usr/local/apisix/conf/apisix.yaml:ro
+    ports:
+      - "9080:9080"
+    depends_on:
+      - catalog
   catalog:
     build: ./catalog
     environment:
-      APP_PRICING_ENDPOINT: http://pricing:8080/prices
-      APP_STOCKS_ENDPOINT: http://stocks:8080/stocks
+      APP_PRICING_ENDPOINT: http://gateway:9080/prices
+      APP_STOCKS_ENDPOINT: http://gateway:9080/stocks
       APP_REFERER: http://catalog.me
       SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/postgres?currentSchema=catalog
       SPRING_R2DBC_USERNAME: postgres
       SPRING_R2DBC_PASSWORD: root
-    ports:
-      - "8080:8080"
     depends_on:
       - pricing
       - stocks

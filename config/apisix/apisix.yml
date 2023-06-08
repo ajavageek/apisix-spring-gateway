@@ -1,0 +1,35 @@
+upstreams:
+  - id: 1
+    nodes:
+      "catalog:8080": 1
+  - id: 2
+    nodes:
+      "pricing:8080": 1
+  - id: 3
+    nodes:
+      "stocks:8080": 1
+
+routes:
+  - uri: /v1/products*
+    upstream_id: 1
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["/v1(.*)", "$1"]
+  - uri: /prices*
+    upstream_id: 2
+    plugins:
+      referer-restriction:
+        whitelist:
+          - catalog.me
+  - uri: /stocks*
+    upstream_id: 3
+    plugins:
+      referer-restriction:
+        whitelist:
+          - catalog.me
+
+global_rules:
+  plugins:
+    prometheus:
+      prefer_name: true
+#END
